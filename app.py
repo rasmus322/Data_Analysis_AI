@@ -85,7 +85,7 @@ if fetch_button:
             st.session_state.enriched_data = enriched_df
 
             try:
-                total = get_total_online_players()
+                total = get_total_online_players(enriched_df, api_key)
                 st.session_state.total_online = total
             except Exception:
                 st.session_state.total_online = 0
@@ -115,7 +115,7 @@ with col1:
     if total_online is None:
         total_online = 0
     st.metric(
-        "🟢 Общий онлайн Steam",
+        f"🟢 Онлайн топ-{len(st.session_state.enriched_data)} игр",
         f"{total_online:,}".replace(",", " "),
     )
 

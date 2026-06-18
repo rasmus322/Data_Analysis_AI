@@ -47,18 +47,15 @@ def get_app_details(app_id: int) -> dict:
     return app_data.get("data", {})
 
 
-def get_total_online_players() -> int:
-    url = "https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1/"
-    params = {"appid": 753}
-    try:
-        resp = requests.get(url, params=params, timeout=10)
-        resp.raise_for_status()
-        data = resp.json()
-        if data.get("response", {}).get("success"):
-            return data["response"].get("player_count", 0)
-        return 0
-    except Exception:
-        return 0
+def get_total_online_players(games_df: pd.DataFrame, api_key: str) -> int:
+    total = 0
+    for _, row in games_df.iterrows():
+        try:
+            current = get_current_players(row["app_id"], api_key)
+            total += current
+        except Exception:
+            pass
+    return total
 
 
 def enrich_games_data(games_df: pd.DataFrame, api_key: str, top_n: int = 20) -> pd.DataFrame:
